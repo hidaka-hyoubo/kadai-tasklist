@@ -1,8 +1,11 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
+// use App\Http\Controllers\ProfileController; // コメントアウトにする
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\UsersController; // 追記
+use App\Http\Controllers\TasklistController; //追記
+use App\Http\Controllers\TasksController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -13,19 +16,18 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+Route::get('/', [TasksController::class, 'index']);
 
-Route::get('/', function () {
-    return view('welcome');
-});
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [TasksController::class, 'index'])->middleware(['auth'])->name('dashboard');
+//  Route::get('/dashboard', function () {
+//      return view('dashboard');
+//  })->name('dashboard');
 
+
+// 認証されたユーザーの処理
 Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::resource('tasks',TasksController::class);
 });
 
 require __DIR__.'/auth.php';

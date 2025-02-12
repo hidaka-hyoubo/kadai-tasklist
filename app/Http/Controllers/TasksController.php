@@ -13,6 +13,7 @@ class TasksController extends Controller
      */
     public function index()
     {
+        /*
         // タスク一覧を取得
         $tasks = Task::all();
         
@@ -20,6 +21,25 @@ class TasksController extends Controller
         return view('tasks.index', [     
             'tasks' => $tasks,        
         ]); 
+        */
+        
+        $data = [];
+        if (\Auth::check()) { // 認証済みの場合
+            // 認証済みユーザーを取得
+            $user = \Auth::user();
+            // ユーザーの投稿の一覧を作成日時の降順で取得
+            // （後のChapterで他ユーザーの投稿も取得するように変更しますが、現時点ではこのユーザーの投稿のみ取得します）
+            $tasks = $user->tasks()->orderBy('created_at', 'desc')->paginate(10);
+            $data = [
+                'user' => $user,
+                'tasks' => $tasks,
+            ];
+            // タスク一覧ビューでそれを表示
+            return view('tasks.index', $data); 
+        }
+        
+        // dashboardビューでそれらを表示
+        return view('dashboard', $data);
     }
 
     /**
@@ -47,10 +67,15 @@ class TasksController extends Controller
         ]);
         
         // タスクを作成
-        $task = new Task;
-        $task->content = $request->content;
-        $task->status = $request->status;
-        $task->save();
+        // $task = new Task;
+        // $task->content = $request->content;
+        // $task->status = $request->status;
+        // $task->save();
+        // 認証済みユーザー（閲覧者）の投稿として作成（リクエストされた値をもとに作成）
+        $request->user()->tasks()->create([
+            'content' => $request->content,
+            'status' => $request->status,
+        ]);
 
         // トップページへリダイレクトさせる
         return redirect('/');
