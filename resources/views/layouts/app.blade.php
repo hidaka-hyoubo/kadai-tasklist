@@ -28,9 +28,12 @@
             @endif
 
             <!-- Page Content -->
-            <main>
-                {{ $slot }}
-            </main>
+            <div class="container mx-auto">
+            {{-- エラーメッセージ --}}
+            @include('commons.error_messages')
+
+            @yield('content')
+        </div>
         </div>
     </body>
 </html>
