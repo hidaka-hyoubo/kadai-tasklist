@@ -135,13 +135,20 @@ class TasksController extends Controller
         
          // idの値でタスクを検索して取得
         $task = Task::findOrFail($id);
-        // タスクを更新
+        
+        if (\Auth::id() === $task->user_id){
+            // タスクを更新
         $task->content = $request->content;
         $task->status = $request->status;
         $task->save();
 
         // トップページへリダイレクトさせる
         return redirect('/');
+        }
+        // 前のURLへリダイレクトさせる
+        return back()
+            ->with('Update Failed');
+        
     }
 
     /**
@@ -151,10 +158,16 @@ class TasksController extends Controller
     {
          // idの値でタスクを検索して取得
         $task = Task::findOrFail($id);
-        // タスクを削除
+        
+        if (\Auth::id() === $task->user_id){
+            // タスクを削除
         $task->delete();
 
         // トップページへリダイレクトさせる
         return redirect('/');
+        }
+        // 前のURLへリダイレクトさせる
+        return back()
+            ->with('Delete Failed');
     }
 }
