@@ -88,11 +88,17 @@ class TasksController extends Controller
     {
          // idの値でメッセージを検索して取得
         $task = Task::findOrFail($id);
-
+        
+        // 認証済みユーザー（閲覧者）がその投稿の所有者である場合は投稿を表示
+        if (\Auth::id() === $task->user_id){
         // タスク詳細ビューでそれを表示
         return view('tasks.show', [
             'task' => $task,
         ]);
+}
+        // 前のURLへリダイレクトさせる
+        return back()
+        ->with('No authentication');
     }
 
     /**
@@ -102,11 +108,18 @@ class TasksController extends Controller
     {
          // idの値でメッセージを検索して取得
         $task = Task::findOrFail($id);
-
+        
+        // 認証済みユーザー（閲覧者）がその投稿の所有者である場合は投稿を表示
+        if (\Auth::id() === $task->user_id){
         // メッセージ編集ビューでそれを表示
         return view('tasks.edit', [
             'task' => $task,
         ]);
+        // 前のURLへリダイレクトさせる
+        return back()
+        ->with('No authentication');
+}
+        
     }
 
     /**
